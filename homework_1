@@ -1,0 +1,37 @@
+--question 3
+select count(*) cnt
+from public.yellow_taxi_2021_01 yt
+where yt.tpep_pickup_datetime >= '2021-01-15' and yt.tpep_pickup_datetime < '2021-01-16'
+;
+
+--question 4
+select yt.tpep_pickup_datetime::date, max(yt.tip_amount) max_tip
+from public.yellow_taxi_2021_01 yt
+group by yt.tpep_pickup_datetime::date
+order by max_tip desc
+;
+
+--question 5
+select tz_dest."Zone", count(*) cnt
+from public.yellow_taxi_2021_01 yt
+	left join public.taxi_zones tz_pickup
+	on yt."PULocationID" = tz_pickup."LocationID"
+		left join public.taxi_zones tz_dest
+		on yt."DOLocationID" = tz_dest."LocationID"
+where yt.tpep_pickup_datetime >= '2021-01-14' and yt.tpep_pickup_datetime < '2021-01-15'
+	and tz_pickup."Zone" = 'Central Park'
+group by tz_dest."Zone"
+order by cnt desc
+;
+
+--question 6
+select tz_pickup."Zone" pickup_zone, tz_dest."Zone" dest_zone, 
+	AVG(yt.total_amount) avg_amount
+from public.yellow_taxi_2021_01 yt
+	left join public.taxi_zones tz_pickup
+	on yt."PULocationID" = tz_pickup."LocationID"
+		left join public.taxi_zones tz_dest
+		on yt."DOLocationID" = tz_dest."LocationID"
+group by tz_pickup."Zone", tz_dest."Zone"
+order by avg_amount desc
+;
